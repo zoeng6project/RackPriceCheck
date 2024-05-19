@@ -1,0 +1,5 @@
+pandas
+requests
+bs4
+google-api-python-client
+pdfplumber

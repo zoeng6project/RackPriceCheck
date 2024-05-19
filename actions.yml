@@ -1,0 +1,65 @@
+name: run main.py
+
+on:
+  schedule:
+    - cron: '30 9 * * *' # every 9:30 daily
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Install bs4 package
+        run: pip install bs4
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas
+      
+      - name: Install requests module
+        run: pip install requests
+
+      - name: Install requests module
+        run: pip install pdfplumber
+
+      - name: Checkout repo content
+        uses: actions/checkout@v4 # checkout the repository content to GitHub runner
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9' # install the Python version needed
+          
+      - name: install python packages
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install google-api-python-client
+          
+      - name: execute py script # run main1.py Petro‑Canada rack pricing
+        env:
+          SOME_SECRET: ${{ secrets.SOME_SECRET }}
+        run: python main1.py
+
+      - name: execute py script # run main2.py Valero Loading Rack Price
+        env:
+          SOME_SECRET: ${{ secrets.SOME_SECRET }}
+        run: python main2.py
+        
+      - name: execute py script # run main3.py Valero E10 Price
+        env:
+          SOME_SECRET: ${{ secrets.SOME_SECRET }}
+        run: python main3.py
+                 
+      - name: commit files
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add -A
+          git diff-index --quiet HEAD || (git commit -a -m "updated logs" --allow-empty)
+          
+      - name: push changes
+        uses: ad-m/github-push-action@v0.6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: main 
